@@ -1,20 +1,30 @@
 # swift-i18n
 
-Blazing-fast, dependency-free i18n library for Vue 3 and modern JS/TS apps.  
+Blazing-fast, dependency-free i18n library for Vue 3 and modern JS/TS apps.
 Uses native Intl APIs and modern features for blazing performance, dynamic locale loading, caching, and type-safe keys.
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=license)
 
 ---
 
+## Why choose swift-i18n? (Comparison with other libraries)
+- Higher speed — no unnecessary dependencies, works on pure Intl API.
+- Minimal size — lightweight and compact code.
+- TypeScript support — type-safe translation keys and autocomplete.
+- Dynamic loading and caching — convenient for working with large projects.
+- Easy integration into Vue 3 — via a plugin with provide/inject and hooks.
+- Full support for plural and formatting — numbers, dates, currencies, units.
+
+---
+
 ## Features
 
-- Native Intl APIs: `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.PluralRules`, `Intl.RelativeTimeFormat`  
-- Language detection (localStorage, cookie, browser language)  
-- Dynamic locale loading via ESM dynamic import  
-- Local caching of translation bundles in `localStorage` (7-day TTL)  
-- Vue 3 plugin with `provide`/`inject` and global `$t` function  
-- TypeScript-friendly with type-safe translation keys and autocompletion  
+- Native Intl APIs: `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.PluralRules`, `Intl.RelativeTimeFormat`
+- Language detection (localStorage, cookie, browser language)
+- Dynamic locale loading via ESM dynamic import
+- Local caching of translation bundles in `localStorage` (7-day TTL)
+- Vue 3 plugin with `provide`/`inject` and global `$t` function
+- TypeScript-friendly with type-safe translation keys and autocompletion
 
 ---
 
@@ -81,26 +91,20 @@ const { t, plural, changeLanguage, lang } = useI18n();
 import { formatCurrency, formatDate, formatRelativeTime, formatNumber, formatUnit } from 'swift-i18n';
 
 formatNumber(1234567.89, 'en-US'); // "1,234,567.89"
-formatNumber(1234567.89, 'de-DE'); // "1.234.567,89"
-
 formatCurrency(1234.5, 'USD', 'en-US'); // "$1,234.50"
-formatCurrency(1234.5, 'EUR', 'de-DE'); // "1.234,50 €"
-
 formatUnit(10, 'kilometer-per-hour', 'en-US'); // "10 km/h"
-formatUnit(5, 'liter', 'fr-FR'); // "5 l"
-
 formatDate(new Date(), 'en-US'); // "8/11/2025"
-formatDate(Date.now(), 'de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-// "Dienstag, 11. August 2025"
-
 formatRelativeTime(-2, 'day', 'en-US'); // "2 days ago"
-formatRelativeTime(3, 'month', 'fr-FR'); // "dans 3 mois"
 ```
 
 ---
 
 ## plural(baseKey: string, count: number, vars?: Record<string, any>)
-Returns the correct plural form translation for a given count based on the locale’s plural rules.
+Returns the correct plural form translation for a given count based on the locale"s plural rules.
+
+The plural("common.items", 3) method returns the plural form, for example: "one", "few", "many", "other" (depending on the language).
+
+### Example of JSON translation
 ```json
 {
   "common": {
@@ -112,11 +116,43 @@ Returns the correct plural form translation for a given count based on the local
 }
 ```
 
+### Challenge:
+```js
+plural('common.items', 1); // "1 item"
+plural('common.items', 3); // "3 items"
+```
+
 Usage:
 ```bash
 plural('common.items', 1); // "1 item"
 plural('common.items', 3); // "3 items"
 ```
+
+## Transferring variables in translations
+You can pass variables (e.g., names, numbers) into translations via the vars object:
+```json
+{
+  "greeting": "Hello, {name}!"
+}
+```
+
+```ts
+t('greeting', { name: 'Alice' }); // "Hello, Alice!"
+```
+Similarly in the plural:
+```ts
+plural('common.items', 5, { name: 'Alice' });
+```
+
+---
+
+## Dynamic loading & caching
+
+- Translations are dynamically loaded via ESM `import()` from the `locales` folder.
+- They are cached in `localStorage` for 7 days (TTL can be changed in the code).
+- Calling `changeLanguage("de")` will automatically load the German translation and switch the language.
+
+---
 
 ## Writing translations (Type-safe)
 
@@ -155,16 +191,19 @@ src/
 
 ---
 
-## Dynamic loading & caching
-
-- Translations are dynamically loaded via ESM `import()` from the `locales` folder. 
-- They are cached in `localStorage` for 7 days (TTL can be changed in the code).
-- Calling `changeLanguage(‘de’)` will automatically load the German translation and switch the language.
-
----
-
 ## Notes
 
 - For SSR: translations must be loaded manually by the server (via `fetch` or inject in the render).
 
 ---
+
+## Contribution / How to contribute
+Welcome to contribute to swift-i18n!
+
+- Fork the repository.
+- Create a branch with new features or fixes.
+- Write tests for new features.
+- Send a pull request with a detailed description.
+- Sign commits according to Conventional Commits.
+
+Contact me if you need help or ideas.
