@@ -1,0 +1,28 @@
+{
+  "name": "swift-i18n",
+  "version": "1.0.19",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "i18n",
+    "vue3",
+    "typescript",
+    "intl",
+    "translation"
+  ],
+  "author": "RondoYummy <halevych.dev@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.1",
+    "vue": "^3.5.18"
+  },
+  "peerDependencies": {
+    "events": "^3.3.0"
+  }
+}
