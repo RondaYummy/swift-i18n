@@ -3,6 +3,11 @@
 Blazing-fast, dependency-free i18n library for Vue 3 and modern JS/TS apps.  
 Uses native Intl APIs and modern features for blazing performance, dynamic locale loading, caching, and type-safe keys.
 
+[![NPM version][npm-image]][npm-url]
+![npm](https://img.shields.io/npm/dw/i18n)
+[![Known Vulnerabilities][snyk-image]][snyk-url]
+[![FOSSA Status][fossa-image]][fossa-url]
+
 ---
 
 ## Features

@@ -1,6 +1,7 @@
 {
   "name": "swift-i18n",
-  "version": "1.0.19",
+  "version": "1.0.0",
+  "description": "Swift i18n helper",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,8 +13,14 @@
     "vue3",
     "typescript",
     "intl",
-    "translation"
+    "translation",
+    "localization"
   ],
+  "homepage": "https://github.com/RondaYummy/swift-i18n",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RondaYummy/swift-i18n"
+  },
   "author": "RondoYummy <halevych.dev@gmail.com>",
   "license": "MIT",
   "devDependencies": {
