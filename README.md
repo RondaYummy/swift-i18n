@@ -3,6 +3,8 @@
 Blazing-fast, dependency-free i18n library for Vue 3 and modern JS/TS apps.  
 Uses native Intl APIs and modern features for blazing performance, dynamic locale loading, caching, and type-safe keys.
 
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=license)
+
 ---
 
 ## Features
