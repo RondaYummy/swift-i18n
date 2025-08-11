@@ -115,22 +115,6 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-## Example load-loader.ts
-
-```ts
-import type { LocaleBundle } from 'swift-i18n';
-const localeModules = import.meta.glob('./locales/*.json');
-
-export async function loadLocale(lang: string = 'en') {
-  const importer = localeModules[`./locales/${lang}.json`];
-  if (!importer) {
-    throw new Error(`Locale ${lang} not found`);
-  }
-  const module = await importer();
-  return (module as { default: LocaleBundle; }).default;
-}
-```
-
 ```tsx
 import React from 'react';
 import { useI18n } from 'swift-i18n/react-plugin';
@@ -146,6 +130,22 @@ export default function App() {
       <p>Current lang: {lang}</p>
     </>
   );
+}
+```
+
+## Example locale-loader.ts
+
+```ts
+import type { LocaleBundle } from 'swift-i18n';
+const localeModules = import.meta.glob('./locales/*.json');
+
+export async function loadLocale(lang: string = 'en') {
+  const importer = localeModules[`./locales/${lang}.json`];
+  if (!importer) {
+    throw new Error(`Locale ${lang} not found`);
+  }
+  const module = await importer();
+  return (module as { default: LocaleBundle; }).default;
 }
 ```
 
@@ -190,6 +190,7 @@ plural('common.items', 3); // "3 items"
 
 ## Transferring variables in translations
 You can pass variables (e.g., names, numbers) into translations via the vars object:
+
 ```json
 {
   "greeting": "Hello, {name}!"
