@@ -17,7 +17,7 @@ export class SwiftI18n extends EventEmitter {
   constructor(options?: { defaultLang?: string; loader?: (lang: string) => Promise<LocaleBundle>; }) {
     super();
     if (!options?.loader) {
-      console.warn('SwiftI18n requires a loader function to fetch locale bundles. Using default loader that throws.');
+      console.warn('SwiftI18n requires a loader function to fetch locale bundles.');
       throw new Error('No loader provided for SwiftI18n');
     }
     this.loader = options?.loader;

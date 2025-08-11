@@ -9,5 +9,5 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [{Makefile,**.mk}]
-# Use tabs for indentation (Makefiles require tabs)
+# Use tabs for indentation (Makefile require tabs)
 indent_style = tab
