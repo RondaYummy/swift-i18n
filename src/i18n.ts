@@ -1,13 +1,8 @@
 import { EventEmitter } from 'events';
-import { LocaleBundle } from './locale-loader';
 import { resolveInitialLang, persistLang } from './language';
 import { lsGet, lsSet } from './storage';
-import { TranslationKey } from './types';
-
-type BundlesMap = Record<string, LocaleBundle>;
-
-const CACHE_KEY_PREFIX = 'swift-i18n.bundle:';
-const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+import { BundlesMap, LocaleBundle, TranslationKey } from './types';
+import { CACHE_KEY_PREFIX, CACHE_TTL_MS } from './constants';
 
 export class SwiftI18n extends EventEmitter {
   private bundles: BundlesMap = {};

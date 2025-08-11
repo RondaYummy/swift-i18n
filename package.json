@@ -35,5 +35,10 @@
   },
   "peerDependencies": {
     "events": "^3.3.0"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./vue-plugin": "./dist/plugins/vue-plugin.js",
+    "./react-plugin": "./dist/plugins/react-plugin.js"
   }
 }

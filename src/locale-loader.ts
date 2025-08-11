@@ -1,5 +1,4 @@
-import type { TranslationSchema } from './types';
-export type LocaleBundle = TranslationSchema;
+// import type { TranslationSchema } from './types';
 
 // export async function defaultLocaleLoader(lang: string = 'en'): Promise<TranslationSchema> {
 //   const module = await import(`../locales/${lang}.json`);

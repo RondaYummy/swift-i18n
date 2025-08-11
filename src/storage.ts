@@ -1,4 +1,4 @@
-const LS_PREFIX = 'swift-i18n:';
+import { LS_PREFIX } from './constants';
 
 export function lsSet(key: string, value: unknown) {
   try {

@@ -1,4 +1,4 @@
-const LANG_KEY = 'swift_i18n_lang';
+import { LANG_KEY } from './constants';
 
 export function detectLanguage(supported: string[], fallback = 'en'): string {
    const storedLang = localStorage.getItem(LANG_KEY);
