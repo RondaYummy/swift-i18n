@@ -42,7 +42,8 @@ npm install swift-i18n
 // main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import { createSwiftI18n } from 'swift-i18n';
+import { createVueI18n } from 'swift-i18n/vue-plugin';
+import { SwiftI18n } from 'swift-i18n';
 
 const app = createApp(App);
 
@@ -51,11 +52,12 @@ const customLoader = async (lang: string = 'en') => {
   return module.default;
 };
 
-app.use(createSwiftI18n({
+const i18n = new SwiftI18n({
   defaultLang: 'en',
-  supportedLangs: ['en', 'uk'],
-  loader: customLoader, // The path to your locales
-}));
+  loader: customLoader,
+});
+
+app.use(createVueI18n(i18n));
 
 app.mount('#app');
 ```
@@ -66,9 +68,10 @@ app.mount('#app');
 
 ```vue
 <script setup lang="ts">
-import { useI18n } from 'swift-i18n';
+import { useI18n } from 'swift-i18n/vue-plugin';
 
-const { t, plural, changeLanguage, lang } = useI18n();
+const { i18n } = useI18n();
+const { t, plural, changeLanguage, lang } = i18n;
 </script>
 
 <template>
@@ -81,6 +84,69 @@ const { t, plural, changeLanguage, lang } = useI18n();
 
   <p>Current language: {{ lang }}</p>
 </template>
+```
+
+---
+
+## Basic usage (React)
+
+```tsx
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { loadLocale } from './locale-loader.ts';
+import { SwiftI18n } from 'swift-i18n';
+import { createReactI18n } from 'swift-i18n/react-plugin';
+
+const i18n = new SwiftI18n({
+  defaultLang: 'en',
+  loader: loadLocale,
+});
+
+const I18nProvider = createReactI18n(i18n);
+
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <I18nProvider>
+      <App />
+    </I18nProvider>
+  </React.StrictMode>
+);
+```
+
+## Example load-loader.ts
+
+```ts
+import type { LocaleBundle } from 'swift-i18n';
+const localeModules = import.meta.glob('./locales/*.json');
+
+export async function loadLocale(lang: string = 'en') {
+  const importer = localeModules[`./locales/${lang}.json`];
+  if (!importer) {
+    throw new Error(`Locale ${lang} not found`);
+  }
+  const module = await importer();
+  return (module as { default: LocaleBundle; }).default;
+}
+```
+
+```tsx
+import React from 'react';
+import { useI18n } from 'swift-i18n/react-plugin';
+
+export default function App() {
+  const { i18n, lang } = useI18n();
+  return (
+    <>
+      <div>{i18n.t('common.hello')}</div>
+      <div>{i18n.plural('common.items', 3)}</div>
+      <button onClick={() => i18n.changeLanguage('uk')}>🇺🇦</button>
+      <button onClick={() => i18n.changeLanguage('en')}>🇬🇧</button>
+      <p>Current lang: {lang}</p>
+    </>
+  );
+}
 ```
 
 ---
@@ -122,12 +188,6 @@ plural('common.items', 1); // "1 item"
 plural('common.items', 3); // "3 items"
 ```
 
-Usage:
-```bash
-plural('common.items', 1); // "1 item"
-plural('common.items', 3); // "3 items"
-```
-
 ## Transferring variables in translations
 You can pass variables (e.g., names, numbers) into translations via the vars object:
 ```json
@@ -139,6 +199,7 @@ You can pass variables (e.g., names, numbers) into translations via the vars obj
 ```ts
 t('greeting', { name: 'Alice' }); // "Hello, Alice!"
 ```
+
 Similarly in the plural:
 ```ts
 plural('common.items', 5, { name: 'Alice' });

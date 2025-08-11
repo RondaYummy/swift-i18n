@@ -12,7 +12,8 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "lib": ["ES2020", "DOM"],
-    "types": ["node", "vue"]
+    "types": ["node"],
+    "jsx": "react-jsx",
   },
   "include": ["src/**/*", "locales/**/*"]
 }
