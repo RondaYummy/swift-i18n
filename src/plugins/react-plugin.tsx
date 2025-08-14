@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import type { SwiftI18n } from "./i18n";
+import type { SwiftI18n } from "../i18n";
 
 interface I18nContextValue {
   i18n: SwiftI18n;

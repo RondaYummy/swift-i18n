@@ -1,5 +1,5 @@
 import { reactive, readonly, inject, App, computed } from 'vue';
-import type { SwiftI18n } from './i18n';
+import type { SwiftI18n } from '../i18n';
 
 const I18N_SYMBOL = Symbol('SwiftI18n');
 
@@ -16,6 +16,11 @@ export function createVueI18n(i18n: SwiftI18n) {
   return {
     install(app: App) {
       app.provide(I18N_SYMBOL, { i18n, state: readonly(state) });
+
+      // Add to global properties ($t etc.)
+      app.config.globalProperties.$t = i18n.t.bind(i18n);
+      app.config.globalProperties.$plural = i18n.plural.bind(i18n);
+      app.config.globalProperties.$changeLanguage = i18n.changeLanguage.bind(i18n);
     }
   };
 }
