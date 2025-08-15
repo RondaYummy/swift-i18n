@@ -12,7 +12,13 @@ export type NestedKeyOf<
     : `${Key}`;
   }[keyof ObjectType & string];
 
-export type TranslationKey = string; // default without type-safety
+
+export interface Translations { }
+
+// Keys are calculated from the merged interface; until the user adds their keys, this will be `never`.
+export type TranslationKey = NestedKeyOf<Translations> extends never
+  ? string
+  : NestedKeyOf<Translations>;
 
 export type TranslationSchema = {
   [key: string]: string | TranslationSchema;

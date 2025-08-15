@@ -60,7 +60,8 @@ export class SwiftI18n extends EventEmitter {
     await this.load(lang);
   }
 
-  t(key: TranslationKey, vars?: Record<string, any>): string {
+  t(key: TranslationKey, vars?: Record<string, any>): string; // type-safe
+  t(key: string, vars?: Record<string, any>): string {
     const bundle = this.bundles[this.currentLang];
     if (!bundle) return key;
 

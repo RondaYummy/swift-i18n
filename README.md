@@ -219,30 +219,39 @@ plural('common.items', 5, { name: 'Alice' });
 
 ## Writing translations (Type-safe)
 
-12. Add a file for key typing (e.g. `src/types/i18n.d.ts`):
+1. Add a file for key typing (e.g. `src/types/i18n.d.ts`):
 
 ```ts
-// types/i18n.d.ts
-import type { NestedKeyOf } from 'swift-i18n';
-
-type MyTranslations = {
-  common: {
-    hello: string;
-    items_one: string;
-    items_other: string;
-  };
-  home: {
-    title: string;
-    description: string;
-  };
-};
+// src/types/swift-i18n.d.ts
+import 'swift-i18n';
 
 declare module 'swift-i18n' {
-  export type TranslationKey = NestedKeyOf<MyTranslations>;
+  // Merge interface — put YOUR key scheme here
+  interface Translations {
+    common: {
+      hello: string;
+      items_one: string;
+      items_other: string;
+    };
+    home: {
+      title: string;
+      description: string;
+    };
+  }
 }
 ```
 
-2. Place the translations in the `locales` folder as JSON:
+2. Add the file to tsconfig.json:
+
+```json
+{
+  "include": [
+    "src/types/**/*" // Or another folder or file where you described your translation scheme
+  ]
+}
+```
+
+3. Place the translations in the `locales` folder as JSON:
 
 ```bash
 src/
