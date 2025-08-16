@@ -9,14 +9,13 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 
 ---
 
-## Why choose swift-i18n? (`Comparison with other libraries`)
-- Higher speed — no unnecessary dependencies, works on pure `Intl API`.
-- Minimal size — lightweight and compact code.
-- TypeScript support — `type-safe` translation keys and autocomplete.
-- `Dynamic loading` and `caching` — convenient for working with large projects.
-- Easy integration into `Vue 3` — via a plugin with provide/inject and hooks.
-- Easy integration into `React`.
-- Full support for `plural` and `formatting` — numbers, dates, currencies, units.
+## Why choose swift-i18n?
+- **Higher speed** — no unnecessary dependencies, works on pure `Intl API`.
+- **Minimal size** — lightweight and compact code.
+-** TypeScript support** — `type-safe` translation keys and autocomplete.
+- **Dynamic loading` and caching`** — convenient for working with large projects.
+- **Easy integration** — React plugin and Vue 3 plugin with provide/inject and hooks
+- **Full support** — For `plural` and `formatting` — numbers, dates, currencies, units.
 
 ---
 
@@ -31,15 +30,45 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 
 ---
 
-## Installation
+## Get Started
+
+### 1. Installation
 
 ```bash
 npm install swift-i18n
 ```
 
+### 2. Create locale files
+Create a `locales` folder in your `src` directory:
+
+```bash
+src/
+ ├─ locales/
+ │   ├─ en.json
+ │   └─ ua.json
+```
+
+### Example `en.json`:
+
+```json
+{
+  "common": {
+    "hello": "Hello!",
+    "items_one": "{count} item",
+    "items_other": "{count} items"
+  },
+  "home": {
+    "title": "Welcome",
+    "description": "This is the home page"
+  }
+}
+```
+
+### 3. Create `locale-loader.ts`
+
 ---
 
-## Basic usage (`Vue 3 + Vite`)
+## `Vue 3` Integration with `Vite`
 
 ```ts
 // main.ts
@@ -47,26 +76,21 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { createVueI18n } from 'swift-i18n/vue-plugin';
 import { SwiftI18n } from 'swift-i18n';
+import { loadLocale } from './locale-loader.ts';
 
 const app = createApp(App);
-
-const customLoader = async (lang: string = 'en') => {
-  const module = await import(`./locales/${lang}.json`);
-  return module.default;
-};
 
 const i18n = new SwiftI18n({
   defaultLang: 'en',
   supportedLangs: ['en', 'uk'],
-  loader: customLoader,
+  loader: loadLocale,
+  cacheTtlMs:  1000 * 60 * 60 * 24 * 7, // 7 days
 });
 
 app.use(createVueI18n(i18n));
 
 app.mount('#app');
 ```
-
----
 
 ## Usage in components (`<script setup>`)
 
@@ -90,7 +114,7 @@ const { t, plural, changeLanguage, lang } = useI18n();
 
 ---
 
-## Basic usage (`React`)
+## `React` Integration
 
 ```tsx
 import React from 'react';
@@ -103,7 +127,9 @@ import { createReactI18n } from 'swift-i18n/react-plugin';
 
 const i18n = new SwiftI18n({
   defaultLang: 'en',
+  supportedLangs: ['en', 'uk'],
   loader: loadLocale,
+  cacheTtlMs:  1000 * 60 * 60 * 24 * 7, // 7 days
 });
 
 const I18nProvider = createReactI18n(i18n);
@@ -135,7 +161,7 @@ export default function App() {
 }
 ```
 
-## Example `locale-loader.ts`
+## Example `locale-loader.ts` for `Vite`
 
 ```ts
 import type { LocaleBundle } from 'swift-i18n';
@@ -167,12 +193,14 @@ formatRelativeTime(-2, 'day', 'en-US'); // "2 days ago"
 
 ---
 
-## plural(baseKey: string, count: number, vars?: Record<string, any>)
-Returns the correct plural form translation for a given count based on the locale"s plural rules.
+## Core Features
 
-The plural("common.items", 3) method returns the plural form, for example: "one", "few", "many", "other" (depending on the language).
+### Pluralization
 
-### Example of JSON translation
+The `plural(baseKey: string, count: number, vars?: Record<string, any>)` method returns the correct plural form translation:
+
+### Example `JSON` structure:
+
 ```json
 {
   "common": {
@@ -184,14 +212,16 @@ The plural("common.items", 3) method returns the plural form, for example: "one"
 }
 ```
 
-### Challenge:
+### Usage:
+
 ```js
 plural('common.items', 1); // "1 item"
 plural('common.items', 3); // "3 items"
 ```
 
-## Transferring variables in translations
-You can pass variables (e.g., names, numbers) into translations via the vars object:
+## Variable Interpolation
+
+Pass variables into translations via the vars object:
 
 ```json
 {
@@ -201,10 +231,6 @@ You can pass variables (e.g., names, numbers) into translations via the vars obj
 
 ```ts
 t('greeting', { name: 'Alice' }); // "Hello, Alice!"
-```
-
-Similarly in the plural:
-```ts
 plural('common.items', 5, { name: 'Alice' });
 ```
 
@@ -212,20 +238,21 @@ plural('common.items', 5, { name: 'Alice' });
 
 ## Dynamic loading & caching
 
-- Translations are dynamically loaded via ESM `import()` from the `locales` folder.
-- They are cached in `localStorage` for 7 days (TTL can be changed in the code).
-- Calling `changeLanguage("de")` will automatically load the German translation and switch the language.
+- Translations are dynamically loaded via ESM `import()`
+- Cached in `localStorage` for 7 days ( default )
+- Automatic loading when calling `changeLanguage()`.
 
 ---
 
-## Writing translations (`Type-safe`)
+## Advanced Usage
 
-1. Add a file for key typing (e.g. `src/types/i18n.d.ts`):
+### `Type-safe` Translations
+Add type definitions for autocompletion:
+
+1. Create `src/types/swift-i18n.d.ts`:
 
 ```ts
-// src/types/swift-i18n.d.ts
 import 'swift-i18n';
-
 declare module 'swift-i18n' {
   // Merge interface — put YOUR key scheme here
   interface Translations {
@@ -242,35 +269,20 @@ declare module 'swift-i18n' {
 }
 ```
 
-2. Add the file to tsconfig.json:
+2. Add to `tsconfig.json`:
 
 ```json
 {
   "include": [
-    "src/types/**/*" // Or another folder or file where you described your translation scheme
+    "src/types/**/*"
   ]
 }
 ```
 
-3. Place the translations in the `locales` folder as JSON:
-
-```bash
-src/
- ├─ locales/
- │   ├─ en.json
- │   └─ ua.json
-```
-
 ---
 
-## Notes
-
-- For SSR: translations must be loaded manually by the server (via `fetch` or inject in the render).
-
----
-
-## Contribution / How to contribute
-Welcome to contribute to swift-i18n!
+## Contribution
+Welcome to contribute to `swift-i18n`!
 
 - Fork the repository.
 - Create a branch with new features or fixes.

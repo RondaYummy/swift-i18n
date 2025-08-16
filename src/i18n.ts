@@ -9,11 +9,13 @@ export class SwiftI18n extends EventEmitter {
   private currentLang: string;
   private supportedLangs: string[] = [];
   private loader: (lang: string) => Promise<LocaleBundle>;
+  private cacheTtlMs: number;
 
   constructor(options?: {
     defaultLang: string;
     supportedLangs?: string[];
     loader?: (lang: string) => Promise<LocaleBundle>;
+    cacheTtlMs?: number;
   }) {
     super();
     if (!options?.loader) {
@@ -21,6 +23,8 @@ export class SwiftI18n extends EventEmitter {
       throw new Error('No loader provided for SwiftI18n');
     }
     this.loader = options?.loader;
+    this.cacheTtlMs = options.cacheTtlMs ?? CACHE_TTL_MS;
+
     if (options.supportedLangs?.length) {
       this.supportedLangs = options.supportedLangs;
       this.currentLang = detectLanguage(this.supportedLangs, options.defaultLang);
@@ -127,7 +131,7 @@ export class SwiftI18n extends EventEmitter {
     try {
       const raw = lsGet<{ bundle: LocaleBundle; ts: number; }>(this.cacheKey(lang));
       if (!raw) return null;
-      if (Date.now() - raw.ts > CACHE_TTL_MS) {
+      if (Date.now() - raw.ts > this.cacheTtlMs) {
         lsSet(this.cacheKey(lang), null);
         return null;
       }
