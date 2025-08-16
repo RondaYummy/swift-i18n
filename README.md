@@ -3,6 +3,7 @@
 Blazing-fast, dependency-free i18n library for Vue 3 and modern JS/TS apps.
 Uses native Intl APIs and modern features for blazing performance, dynamic locale loading, caching, and type-safe keys.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/RondaYummy/swift-i18n)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=security)
 
@@ -37,7 +38,7 @@ npm install swift-i18n
 
 ---
 
-## Basic usage (Vue 3)
+## Basic usage (Vue 3 + Vite)
 
 ```ts
 // main.ts
@@ -55,6 +56,7 @@ const customLoader = async (lang: string = 'en') => {
 
 const i18n = new SwiftI18n({
   defaultLang: 'en',
+  supportedLangs: ['en', 'uk'],
   loader: customLoader,
 });
 
@@ -71,19 +73,17 @@ app.mount('#app');
 <script setup lang="ts">
 import { useI18n } from 'swift-i18n/vue-plugin';
 
-const { i18n } = useI18n();
-const { t, plural, changeLanguage, lang } = i18n;
+const { t, plural, changeLanguage, lang } = useI18n();
 </script>
 
 <template>
+  <h1>Current language: {{ lang }}</h1>
+
   <div>{{ t('common.hello') }}</div>
   <div>{{ plural('common.items', 5) }}</div>
 
   <button @click="changeLanguage('uk')">UK</button>
-  <button @click="changeLanguage('de')">DE</button>
   <button @click="changeLanguage('en')">EN</button>
-
-  <p>Current language: {{ lang }}</p>
 </template>
 ```
 
@@ -257,8 +257,7 @@ declare module 'swift-i18n' {
 src/
  ├─ locales/
  │   ├─ en.json
- │   ├─ ua.json
- │   └─ de.json
+ │   └─ ua.json
 ```
 
 ---

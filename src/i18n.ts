@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { resolveInitialLang, persistLang } from './language';
+import { resolveInitialLang, persistLang, detectLanguage } from './language';
 import { lsGet, lsSet } from './storage';
 import { BundlesMap, LocaleBundle, TranslationKey } from './types';
 import { CACHE_KEY_PREFIX, CACHE_TTL_MS } from './constants';
@@ -7,16 +7,26 @@ import { CACHE_KEY_PREFIX, CACHE_TTL_MS } from './constants';
 export class SwiftI18n extends EventEmitter {
   private bundles: BundlesMap = {};
   private currentLang: string;
+  private supportedLangs: string[] = [];
   private loader: (lang: string) => Promise<LocaleBundle>;
 
-  constructor(options?: { defaultLang?: string; loader?: (lang: string) => Promise<LocaleBundle>; }) {
+  constructor(options?: {
+    defaultLang: string;
+    supportedLangs?: string[];
+    loader?: (lang: string) => Promise<LocaleBundle>;
+  }) {
     super();
     if (!options?.loader) {
       console.warn('SwiftI18n requires a loader function to fetch locale bundles.');
       throw new Error('No loader provided for SwiftI18n');
     }
     this.loader = options?.loader;
-    this.currentLang = resolveInitialLang(options?.defaultLang);
+    if (options.supportedLangs?.length) {
+      this.supportedLangs = options.supportedLangs;
+      this.currentLang = detectLanguage(this.supportedLangs, options.defaultLang);
+    } else {
+      this.currentLang = resolveInitialLang(options.defaultLang);
+    }
     this.init(this.currentLang).catch(err => {
       console.error('Failed to initialize SwiftI18n:', err);
     });
@@ -24,6 +34,10 @@ export class SwiftI18n extends EventEmitter {
 
   get lang() {
     return this.currentLang;
+  }
+
+  get locales() {
+    return this.supportedLangs;
   }
 
   get allBundles() {
@@ -57,6 +71,12 @@ export class SwiftI18n extends EventEmitter {
 
   async changeLanguage(lang: string) {
     if (lang === this.currentLang) return;
+
+    if (this.supportedLangs.length && !this.supportedLangs.includes(lang)) {
+      console.warn(`Language "${lang}" is not in supportedLangs: [${this.supportedLangs.join(', ')}]`);
+      return;
+    }
+
     await this.load(lang);
   }
 
