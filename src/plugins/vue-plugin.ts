@@ -3,6 +3,14 @@ import type { SwiftI18n } from '../i18n';
 
 const I18N_SYMBOL = Symbol('SwiftI18n');
 
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $t: SwiftI18n['t'];
+    $plural: SwiftI18n['plural'];
+    $changeLanguage: SwiftI18n['changeLanguage'];
+  }
+}
+
 export function createVueI18n(i18n: SwiftI18n) {
   const state = reactive({
     lang: i18n.lang,

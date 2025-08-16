@@ -1,7 +1,7 @@
 # swift-i18n
 
-Blazing-fast, dependency-free i18n library for Vue 3 and modern JS/TS apps.
-Uses native Intl APIs and modern features for blazing performance, dynamic locale loading, caching, and type-safe keys.
+Blazing-fast, dependency-free i18n library for `Vue 3`, `React` and modern `JS/TS apps`.
+Uses native `Intl APIs` and modern features for blazing performance, dynamic locale loading, `caching`, and `type-safe` keys.
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/RondaYummy/swift-i18n)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=license)
@@ -9,24 +9,25 @@ Uses native Intl APIs and modern features for blazing performance, dynamic local
 
 ---
 
-## Why choose swift-i18n? (Comparison with other libraries)
-- Higher speed — no unnecessary dependencies, works on pure Intl API.
+## Why choose swift-i18n? (`Comparison with other libraries`)
+- Higher speed — no unnecessary dependencies, works on pure `Intl API`.
 - Minimal size — lightweight and compact code.
-- TypeScript support — type-safe translation keys and autocomplete.
-- Dynamic loading and caching — convenient for working with large projects.
-- Easy integration into Vue 3 — via a plugin with provide/inject and hooks.
-- Full support for plural and formatting — numbers, dates, currencies, units.
+- TypeScript support — `type-safe` translation keys and autocomplete.
+- `Dynamic loading` and `caching` — convenient for working with large projects.
+- Easy integration into `Vue 3` — via a plugin with provide/inject and hooks.
+- Easy integration into `React`.
+- Full support for `plural` and `formatting` — numbers, dates, currencies, units.
 
 ---
 
 ## Features
 
 - Native Intl APIs: `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.PluralRules`, `Intl.RelativeTimeFormat`
-- Language detection (localStorage, cookie, browser language)
+- Language detection (`localStorage`, `cookie`, `browser language`)
 - Dynamic locale loading via ESM dynamic import
 - Local caching of translation bundles in `localStorage` (7-day TTL)
 - Vue 3 plugin with `provide`/`inject` and global `$t` function
-- TypeScript-friendly with type-safe translation keys and autocompletion
+- TypeScript-friendly with `type-safe` translation keys and autocompletion
 
 ---
 
@@ -38,7 +39,7 @@ npm install swift-i18n
 
 ---
 
-## Basic usage (Vue 3 + Vite)
+## Basic usage (`Vue 3 + Vite`)
 
 ```ts
 // main.ts
@@ -89,7 +90,7 @@ const { t, plural, changeLanguage, lang } = useI18n();
 
 ---
 
-## Basic usage (React)
+## Basic usage (`React`)
 
 ```tsx
 import React from 'react';
@@ -134,7 +135,7 @@ export default function App() {
 }
 ```
 
-## Example locale-loader.ts
+## Example `locale-loader.ts`
 
 ```ts
 import type { LocaleBundle } from 'swift-i18n';
@@ -217,7 +218,7 @@ plural('common.items', 5, { name: 'Alice' });
 
 ---
 
-## Writing translations (Type-safe)
+## Writing translations (`Type-safe`)
 
 1. Add a file for key typing (e.g. `src/types/i18n.d.ts`):
 

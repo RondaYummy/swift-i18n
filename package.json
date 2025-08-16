@@ -1,7 +1,7 @@
 {
   "name": "swift-i18n",
   "version": "1.0.0",
-  "description": "Swift i18n helper",
+  "description": "Fast & Lightweight swift-i18n Library",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
