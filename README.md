@@ -12,7 +12,7 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 ## Why choose swift-i18n?
 - **Higher speed** — no unnecessary dependencies, works on pure `Intl API`.
 - **Minimal size** — lightweight and compact code.
-- ** TypeScript support** — `type-safe` translation keys and autocomplete.
+- **TypeScript support** — `type-safe` translation keys and autocomplete.
 - **Dynamic loading and caching** — convenient for working with large projects.
 - **Easy integration** — `React` plugin and `Vue 3` plugin with provide/inject and hooks
 - **Full support** — For `plural` and `formatting` — `numbers`, `dates`, `currencies`, `units`.
