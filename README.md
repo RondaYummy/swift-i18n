@@ -12,10 +12,10 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 ## Why choose swift-i18n?
 - **Higher speed** — no unnecessary dependencies, works on pure `Intl API`.
 - **Minimal size** — lightweight and compact code.
--** TypeScript support** — `type-safe` translation keys and autocomplete.
-- **Dynamic loading` and caching`** — convenient for working with large projects.
-- **Easy integration** — React plugin and Vue 3 plugin with provide/inject and hooks
-- **Full support** — For `plural` and `formatting` — numbers, dates, currencies, units.
+- ** TypeScript support** — `type-safe` translation keys and autocomplete.
+- **Dynamic loading and caching** — convenient for working with large projects.
+- **Easy integration** — `React` plugin and `Vue 3` plugin with provide/inject and hooks
+- **Full support** — For `plural` and `formatting` — `numbers`, `dates`, `currencies`, `units`.
 
 ---
 
@@ -23,7 +23,7 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 
 - Native Intl APIs: `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.PluralRules`, `Intl.RelativeTimeFormat`
 - Language detection (`localStorage`, `cookie`, `browser language`)
-- Dynamic locale loading via ESM dynamic import
+- Dynamic locale loading via `ESM` dynamic import
 - Local caching of translation bundles in `localStorage` (7-day TTL)
 - Vue 3 plugin with `provide`/`inject` and global `$t` function
 - TypeScript-friendly with `type-safe` translation keys and autocompletion

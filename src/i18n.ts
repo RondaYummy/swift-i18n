@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { resolveInitialLang, persistLang, detectLanguage } from './language';
-import { lsGet, lsSet } from './storage';
+import { lsGet, lsSet } from './storages/local-storage';
 import { BundlesMap, LocaleBundle, TranslationKey } from './types';
 import { CACHE_KEY_PREFIX, CACHE_TTL_MS } from './constants';
 
@@ -147,6 +147,3 @@ export class SwiftI18n extends EventEmitter {
     } catch { }
   }
 }
-
-// export const i18n = new SwiftI18n();
-export type I18n = SwiftI18n;

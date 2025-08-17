@@ -1,3 +1,5 @@
+import { SwiftI18n } from '../i18n';
+
 type Prev = [never, 0, 1, 2, 3, 4, 5];
 
 export type NestedKeyOf<
@@ -27,3 +29,5 @@ export type TranslationSchema = {
 export type LocaleBundle = TranslationSchema;
 
 export type BundlesMap = Record<string, LocaleBundle>;
+
+export type I18n = SwiftI18n;

@@ -1,4 +1,4 @@
-import { LS_PREFIX } from './constants';
+import { LANG_KEY, LS_PREFIX } from '../constants';
 
 export function lsSet(key: string, value: unknown) {
   try {
@@ -23,5 +23,21 @@ export function lsRemove(key: string) {
     localStorage.removeItem(LS_PREFIX + key);
   } catch {
     // ignore errors
+  }
+}
+
+export function lsSetLang(lang: string) {
+  try {
+    localStorage.setItem(LANG_KEY, lang);
+  } catch {
+    // ignore errors
+  }
+}
+
+export function lsGetLanguage(): string | null {
+  try {
+    return localStorage.getItem(LANG_KEY);
+  } catch {
+    return null;
   }
 }
