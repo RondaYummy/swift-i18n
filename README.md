@@ -4,6 +4,7 @@ Blazing-fast, dependency-free i18n library for `Vue 3`, `React` and modern `JS/T
 Uses native `Intl APIs` and modern features for blazing performance, dynamic locale loading, `caching`, and `type-safe` keys.
 
 [![npm version](https://badge.fury.io/js/swift-i18n.svg)](https://badge.fury.io/js/swift-i18n)
+![NPM Downloads](https://img.shields.io/npm/dm/swift-i18n)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/RondaYummy/swift-i18n)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2FRondaYummy%2Fswift-i18n?ref=badge_shield&issueType=security)
