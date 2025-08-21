@@ -33,13 +33,13 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 
 ## Get Started
 
-### 1. Installation
+#### 1. Installation
 
 ```bash
 npm install swift-i18n
 ```
 
-### 2. Create locale files
+#### 2. Create locale files
 Create a `locales` folder in your `src` directory:
 
 ```bash
@@ -49,7 +49,7 @@ src/
  │   └─ uk.json
 ```
 
-### Example `en.json`:
+#### Example `en.json`:
 
 ```json
 {
@@ -180,7 +180,7 @@ formatRelativeTime(-2, 'day', 'en-US'); // "2 days ago"
 
 The `plural(baseKey: string, count: number, vars?: Record<string, any>)` method returns the correct plural form translation:
 
-### Example `JSON` structure:
+#### Example `JSON` structure:
 
 ```json
 {
@@ -193,7 +193,7 @@ The `plural(baseKey: string, count: number, vars?: Record<string, any>)` method 
 }
 ```
 
-### Usage:
+#### Usage:
 
 ```js
 plural('common.items', 1); // "1 item"
@@ -202,7 +202,7 @@ plural('common.items', 3); // "3 items"
 
 ---
 
-## Variable Interpolation
+### Variable Interpolation
 
 Pass variables into translations via the vars object:
 
@@ -219,7 +219,7 @@ plural('common.items', 5, { name: 'Alice' });
 
 ---
 
-## Fallbacking
+### Fallbacking
 
 `fallbackLang: 'en'` to choose which language to use when your preferred language lacks a translation.
 
@@ -238,24 +238,27 @@ Sometimes some items will not be translated into some languages. In this example
 If you want to use (say) `en` items when an item is not available in your desired locale, set the `fallbackLang` option in the `createSwiftI18n`:
 
 ```ts
-const i18n = createI18n({
-  locale: 'ja',
-  fallbackLocale: 'en',
-  messages
-})
+const i18n = await createSwiftI18n({
+  defaultLang: 'ja',
+  fallbackLang: 'en',
+  loader: async (lang) => {
+    const module = await import(`./locales/${lang}.json`)
+    return module.default
+  }
+});
 ```
 
 ---
 
 ## Advanced Usage
 
-## Linked messages
+### Linked messages
 
 If there’s a locale messages key that will always have the same concrete text as another one you can just link to it.
 
 To link to another locale messages key, all you have to do is to prefix its contents with an `@:key` sign followed by the full name of the locale messages key including the namespace you want to link to.
 
-Locale messages the below:
+#### Locale messages the below:
 
 ```json
 {
@@ -272,7 +275,7 @@ It’s `en` locale that has hierarchical structure in the object.
 
 The `message.the_world` has `the_world` and `message.dio`. The `message.linked` has `@:message.dio @:message.dio @:message.the_world !!!!`, and it’s linked to the locale messages key with `message.dio` and `message.the_world`.
 
-The following is an example of the use of `$t()` or `t()` in a template:
+#### The following is an example of the use of `$t()` or `t()` in a template:
 
 ```html
 <p>{{ $t('message.linked') }}</p>
@@ -280,7 +283,7 @@ The following is an example of the use of `$t()` or `t()` in a template:
 
 The first argument is `message.linked` as the locale messages key as a parameter to `t`.
 
-As result the below:
+#### As result the below:
 
 ```html
 <p>DIO: the world !!!!</p>
@@ -295,7 +298,8 @@ As result the below:
 
 ---
 
-### `Type-safe` Translations
+## `Type-safe` Translations
+
 Add type definitions for autocompletion:
 
 1. Create `src/types/swift-i18n.d.ts`:
