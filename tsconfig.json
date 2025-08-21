@@ -11,9 +11,19 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "resolveJsonModule": true,
-    "lib": ["ES2020", "DOM"],
-    "types": ["node"],
-    "jsx": "react-jsx",
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "locales/**/*", "src/types/vue-i18n.d.ts"],
+  "include": [
+    "src/**/*",
+    "locales/**/*",
+    "src/types/vue-i18n.d.ts"
+  ]
 }

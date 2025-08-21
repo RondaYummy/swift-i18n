@@ -1,29 +1,21 @@
 import { EventEmitter } from 'events';
 import { resolveInitialLang, persistLang, detectLanguage } from './language';
-import { lsGet, lsSet } from './storages/local-storage';
-import { BundlesMap, LocaleBundle, TranslationKey } from './types';
-import { CACHE_KEY_PREFIX, CACHE_TTL_MS } from './constants';
+import { BundlesMap, LocaleBundle, Options, TranslationKey } from './types';
+import { createVueI18n } from './plugins/vue-plugin';
 
 export class SwiftI18n extends EventEmitter {
   private bundles: BundlesMap = {};
   private currentLang: string;
   private supportedLangs: string[] = [];
   private loader: (lang: string) => Promise<LocaleBundle>;
-  private cacheTtlMs: number;
 
-  constructor(options?: {
-    defaultLang: string;
-    supportedLangs?: string[];
-    loader?: (lang: string) => Promise<LocaleBundle>;
-    cacheTtlMs?: number;
-  }) {
+  constructor(options?: Options) {
     super();
     if (!options?.loader) {
       console.warn('SwiftI18n requires a loader function to fetch locale bundles.');
       throw new Error('No loader provided for SwiftI18n');
     }
     this.loader = options?.loader;
-    this.cacheTtlMs = options.cacheTtlMs ?? CACHE_TTL_MS;
 
     if (options.supportedLangs?.length) {
       this.supportedLangs = options.supportedLangs;
@@ -31,9 +23,6 @@ export class SwiftI18n extends EventEmitter {
     } else {
       this.currentLang = resolveInitialLang(options.defaultLang);
     }
-    this.init(this.currentLang).catch(err => {
-      console.error('Failed to initialize SwiftI18n:', err);
-    });
   }
 
   get lang() {
@@ -53,21 +42,11 @@ export class SwiftI18n extends EventEmitter {
     await this.load(this.currentLang);
   }
 
-  async load(lang: string, force = false) {
-    if (!force) {
-      const cached = this.readCache(lang);
-      if (cached) {
-        this.bundles[lang] = cached;
-        this.currentLang = lang;
-        persistLang(lang);
-        this.emit('languageChanged', lang);
-        return;
-      }
-    }
 
+
+  async load(lang: string) {
     const bundle = await this.loader(lang);
     this.bundles[lang] = bundle;
-    this.writeCache(lang, bundle);
     this.currentLang = lang;
     persistLang(lang);
     this.emit('languageChanged', lang);
@@ -81,6 +60,7 @@ export class SwiftI18n extends EventEmitter {
       return;
     }
 
+    this.emit('languageChanging', lang);
     await this.load(lang);
   }
 
@@ -96,12 +76,21 @@ export class SwiftI18n extends EventEmitter {
       else return key;
     }
     if (typeof cur !== 'string') return key;
+
+    let result = cur;
+    // linked keys (@:something)
+    result = result.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));
+
     if (vars) {
       Object.entries(vars).forEach(([k, v]) => {
-        cur = cur.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+        let val = String(v);
+  
+        val = val.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));
+        result = result.replace(new RegExp(`\\{${k}\\}`, "g"), val);
       });
     }
-    return cur;
+
+    return result;
   }
 
   plural(baseKey: string, count: number, vars?: Record<string, any>) {
@@ -117,33 +106,5 @@ export class SwiftI18n extends EventEmitter {
 
   availableLocales() {
     return Object.keys(this.bundles);
-  }
-
-  setLoader(loader: (lang: string) => Promise<LocaleBundle>) {
-    this.loader = loader;
-  }
-
-  private cacheKey(lang: string) {
-    return CACHE_KEY_PREFIX + lang;
-  }
-
-  private readCache(lang: string): LocaleBundle | null {
-    try {
-      const raw = lsGet<{ bundle: LocaleBundle; ts: number; }>(this.cacheKey(lang));
-      if (!raw) return null;
-      if (Date.now() - raw.ts > this.cacheTtlMs) {
-        lsSet(this.cacheKey(lang), null);
-        return null;
-      }
-      return raw.bundle;
-    } catch {
-      return null;
-    }
-  }
-
-  private writeCache(lang: string, bundle: LocaleBundle) {
-    try {
-      lsSet(this.cacheKey(lang), { bundle, ts: Date.now() });
-    } catch { }
   }
 }

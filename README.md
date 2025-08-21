@@ -26,7 +26,6 @@ Uses native `Intl APIs` and modern features for blazing performance, dynamic loc
 - Native Intl APIs: `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.PluralRules`, `Intl.RelativeTimeFormat`
 - Language detection (`localStorage`, `cookie`, `browser language`)
 - Dynamic locale loading via `ESM` dynamic import
-- Local caching of translation bundles in `localStorage` (7-day TTL)
 - Vue 3 plugin with `provide`/`inject` and global `$t` function
 - TypeScript-friendly with `type-safe` translation keys and autocompletion
 
@@ -47,7 +46,7 @@ Create a `locales` folder in your `src` directory:
 src/
  ├─ locales/
  │   ├─ en.json
- │   └─ ua.json
+ │   └─ uk.json
 ```
 
 ### Example `en.json`:
@@ -66,30 +65,24 @@ src/
 }
 ```
 
-### 3. Create `locale-loader.ts`
-
----
-
 ## `Vue 3` Integration with `Vite`
 
 ```ts
-// main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import { createVueI18n } from 'swift-i18n/vue-plugin';
-import { SwiftI18n } from 'swift-i18n';
-import { loadLocale } from './locale-loader.ts';
+import { createSwiftI18n } from 'swift-i18n/vue-plugin';
 
 const app = createApp(App);
 
-const i18n = new SwiftI18n({
+const i18n = await createSwiftI18n({
   defaultLang: 'en',
   supportedLangs: ['en', 'uk'],
-  loader: loadLocale,
-  cacheTtlMs:  1000 * 60 * 60 * 24 * 7, // 7 days
+  loader: async (lang) => {
+    const module = await import(`./locales/${lang}.json`)
+    return module.default
+  }
 });
-
-app.use(createVueI18n(i18n));
+app.use(i18n);
 
 app.mount('#app');
 ```
@@ -122,27 +115,28 @@ const { t, plural, changeLanguage, lang } = useI18n();
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import './index.css';
-import { loadLocale } from './locale-loader.ts';
-import { SwiftI18n } from 'swift-i18n';
-import { createReactI18n } from 'swift-i18n/react-plugin';
+import { createSwiftI18n } from 'swift-i18n/react-plugin';
 
-const i18n = new SwiftI18n({
-  defaultLang: 'en',
-  supportedLangs: ['en', 'uk'],
-  loader: loadLocale,
-  cacheTtlMs:  1000 * 60 * 60 * 24 * 7, // 7 days
-});
+async function bootstrap() {
+  const I18nProvider = await createSwiftI18n({
+    defaultLang: 'en',
+    supportedLangs: ['en', 'uk'],
+    loader: async (lang) => {
+      const module = await import(`./locales/${lang}.json`)
+      return module.default
+    }
+  });
 
-const I18nProvider = createReactI18n(i18n);
+  createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <I18nProvider>
+        <App />
+      </I18nProvider>
+    </React.StrictMode>
+  )
+}
 
-createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <I18nProvider>
-      <App />
-    </I18nProvider>
-  </React.StrictMode>
-);
+bootstrap()
 ```
 
 ```tsx
@@ -150,36 +144,19 @@ import React from 'react';
 import { useI18n } from 'swift-i18n/react-plugin';
 
 export default function App() {
-  const { i18n, lang } = useI18n();
+  const { t, lang, changeLanguage, plural } = useI18n();
+
   return (
     <>
-      <div>{i18n.t('common.hello')}</div>
-      <div>{i18n.plural('common.items', 3)}</div>
-      <button onClick={() => i18n.changeLanguage('uk')}>🇺🇦</button>
-      <button onClick={() => i18n.changeLanguage('en')}>🇬🇧</button>
+      <div>{t('common.hello')}</div>
+      <div>{plural('common.items', 3)}</div>
+      <button onClick={() => changeLanguage('uk')}>🇺🇦</button>
+      <button onClick={() => changeLanguage('en')}>🇬🇧</button>
       <p>Current lang: {lang}</p>
     </>
   );
 }
 ```
-
-## Example `locale-loader.ts` for `Vite`
-
-```ts
-import type { LocaleBundle } from 'swift-i18n';
-const localeModules = import.meta.glob('./locales/*.json');
-
-export async function loadLocale(lang: string = 'en') {
-  const importer = localeModules[`./locales/${lang}.json`];
-  if (!importer) {
-    throw new Error(`Locale ${lang} not found`);
-  }
-  const module = await importer();
-  return (module as { default: LocaleBundle; }).default;
-}
-```
-
----
 
 ## Format helpers
 
@@ -238,10 +215,48 @@ plural('common.items', 5, { name: 'Alice' });
 
 ---
 
+## Linked messages
+
+If there’s a locale messages key that will always have the same concrete text as another one you can just link to it.
+
+To link to another locale messages key, all you have to do is to prefix its contents with an `@:key` sign followed by the full name of the locale messages key including the namespace you want to link to.
+
+Locale messages the below:
+
+```json
+{
+  en: {
+    message: {
+      the_world: 'the world',
+      dio: 'DIO:',
+      linked: '@:message.dio @:message.the_world !!!!'
+    }
+  }
+}
+```
+It’s `en` locale that has hierarchical structure in the object.
+
+The `message.the_world` has `the_world` and `message.dio`. The `message.linked` has `@:message.dio @:message.dio @:message.the_world !!!!`, and it’s linked to the locale messages key with `message.dio` and `message.the_world`.
+
+The following is an example of the use of `$t()` or `t()` in a template:
+
+```html
+<p>{{ $t('message.linked') }}</p>
+```
+
+The first argument is `message.linked` as the locale messages key as a parameter to `t`.
+
+As result the below:
+
+```html
+<p>DIO: the world !!!!</p>
+```
+
+---
+
 ## Dynamic loading & caching
 
 - Translations are dynamically loaded via ESM `import()`
-- Cached in `localStorage` for 7 days ( default )
 - Automatic loading when calling `changeLanguage()`.
 
 ---

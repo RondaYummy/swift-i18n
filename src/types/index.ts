@@ -31,3 +31,9 @@ export type LocaleBundle = TranslationSchema;
 export type BundlesMap = Record<string, LocaleBundle>;
 
 export type I18n = SwiftI18n;
+
+export interface Options {
+  defaultLang: string;
+  supportedLangs?: string[];
+  loader?: (lang: string) => Promise<LocaleBundle>;
+}

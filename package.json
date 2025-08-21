@@ -1,6 +1,6 @@
 {
   "name": "swift-i18n",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Fast & Lightweight swift-i18n Library",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -8,7 +8,10 @@
   "author": "RondoYummy <halevych.dev@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "i18n",
@@ -32,8 +35,13 @@
   },
   "devDependencies": {
     "@types/node": "^24.2.1",
+    "@types/react": "^19.1.10",
+    "@vitest/coverage-v8": "^3.2.4",
+    "jsdom": "^26.1.0",
+    "react": "^19.1.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.1",
+    "vitest": "^3.2.4",
     "vue": "^3.5.18"
   },
   "peerDependencies": {

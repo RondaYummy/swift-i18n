@@ -1,7 +1,8 @@
 import { reactive, readonly, inject, App, computed } from 'vue';
-import type { SwiftI18n } from '../i18n';
+import { SwiftI18n } from '../i18n';
+import { Options } from '../types';
 
-const I18N_SYMBOL = Symbol('SwiftI18n');
+export const I18N_SYMBOL = Symbol('SwiftI18n');
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -19,6 +20,7 @@ export function createVueI18n(i18n: SwiftI18n) {
 
   i18n.on('languageChanged', (newLang: string) => {
     state.lang = newLang;
+    state.bundles = i18n.allBundles;
   });
 
   return {
@@ -45,4 +47,14 @@ export function useI18n() {
     plural: ctx.i18n.plural.bind(ctx.i18n),
     changeLanguage: ctx.i18n.changeLanguage.bind(ctx.i18n),
   };
+}
+
+export async function createSwiftI18n(options?: Options) {
+  const i18n = new SwiftI18n({
+    defaultLang: options?.defaultLang ?? 'en',
+    supportedLangs: options?.supportedLangs ?? ['en'],
+    loader: options?.loader,
+  })
+  await i18n.init()
+  return createVueI18n(i18n)
 }
