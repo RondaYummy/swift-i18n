@@ -158,6 +158,8 @@ export default function App() {
 }
 ```
 
+---
+
 ## Format helpers
 
 ```ts
@@ -198,6 +200,8 @@ plural('common.items', 1); // "1 item"
 plural('common.items', 3); // "3 items"
 ```
 
+---
+
 ## Variable Interpolation
 
 Pass variables into translations via the vars object:
@@ -215,6 +219,36 @@ plural('common.items', 5, { name: 'Alice' });
 
 ---
 
+## Fallbacking
+
+`fallbackLang: 'en'` to choose which language to use when your preferred language lacks a translation.
+
+Sometimes some items will not be translated into some languages. In this example, the item `hello` is available in English but not Japanese:
+
+```json
+{
+  "en": {
+    "hello": "Hello, world!"
+  },
+  "ja": {
+  }
+}
+```
+
+If you want to use (say) `en` items when an item is not available in your desired locale, set the `fallbackLang` option in the `createSwiftI18n`:
+
+```ts
+const i18n = createI18n({
+  locale: 'ja',
+  fallbackLocale: 'en',
+  messages
+})
+```
+
+---
+
+## Advanced Usage
+
 ## Linked messages
 
 If there’s a locale messages key that will always have the same concrete text as another one you can just link to it.
@@ -225,11 +259,11 @@ Locale messages the below:
 
 ```json
 {
-  en: {
-    message: {
-      the_world: 'the world',
-      dio: 'DIO:',
-      linked: '@:message.dio @:message.the_world !!!!'
+  "en": {
+    "message": {
+      "the_world": "the world",
+      "dio": "DIO:",
+      "linked": "@:message.dio @:message.the_world !!!!"
     }
   }
 }
@@ -260,8 +294,6 @@ As result the below:
 - Automatic loading when calling `changeLanguage()`.
 
 ---
-
-## Advanced Usage
 
 ### `Type-safe` Translations
 Add type definitions for autocompletion:

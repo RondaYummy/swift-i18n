@@ -40,7 +40,7 @@ export function useI18n() {
   const ctx = useContext(I18nContext);
   if (!ctx) throw new Error("useI18n must be used inside I18nProvider");
   const { i18n, lang, bundles } = ctx;
-  
+
   return {
     t: i18n.t.bind(i18n),
     changeLanguage: i18n.changeLanguage.bind(i18n),
@@ -51,11 +51,7 @@ export function useI18n() {
 }
 
 export async function createSwiftI18n(options?: Options) {
-  const i18n = new SwiftI18n({
-    defaultLang: options?.defaultLang ?? 'en',
-    supportedLangs: options?.supportedLangs ?? ['en'],
-    loader: options?.loader,
-  })
-  await i18n.init()
-  return createReactI18n(i18n)
+  const i18n = new SwiftI18n(options);
+  await i18n.init();
+  return createReactI18n(i18n);
 }

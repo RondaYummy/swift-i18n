@@ -34,6 +34,7 @@ export type I18n = SwiftI18n;
 
 export interface Options {
   defaultLang: string;
+  fallbackLang?: string;
   supportedLangs?: string[];
   loader?: (lang: string) => Promise<LocaleBundle>;
 }
