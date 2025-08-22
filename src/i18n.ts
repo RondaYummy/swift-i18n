@@ -2,12 +2,14 @@ import { EventEmitter } from "events";
 import { resolveInitialLang, persistLang, detectLanguage } from "./language";
 import { BundlesMap, LocaleBundle, Options, TranslationKey } from "./types";
 import { createVueI18n } from "./plugins/vue-plugin";
+import { escapeParams } from "./utils/escap";
 
 export class SwiftI18n extends EventEmitter {
   private bundles: BundlesMap = {};
   private currentLang: string;
   private fallback?: string;
   private supportedLangs: string[] = [];
+  private escapeParameter?: boolean;
   private loader: (lang: string) => Promise<LocaleBundle>;
 
   constructor(options?: Options) {
@@ -25,6 +27,7 @@ export class SwiftI18n extends EventEmitter {
       this.currentLang = resolveInitialLang(options.defaultLang);
     }
     this.fallback = options?.fallbackLang;
+    this.escapeParameter = options?.escapeParameter;
   }
 
   get lang() {
@@ -88,8 +91,8 @@ export class SwiftI18n extends EventEmitter {
     return typeof cur === "string" ? cur : undefined;
   }
 
-  t(key: TranslationKey, vars?: Record<string, any>): string; // type-safe
-  t(key: string, vars?: Record<string, any>): string {
+  t(key: TranslationKey, vars?: Record<string, any>, options?: { escapeParameter?: boolean }): string; // type-safe
+  t(key: string, vars?: Record<string, any>, options?: { escapeParameter?: boolean }): string {
     const parts = key.split(".");
     let result =
     this.resolveKey(this.bundles[this.currentLang], parts) ??
@@ -100,10 +103,13 @@ export class SwiftI18n extends EventEmitter {
     result = result.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));
 
     if (vars) {
-      Object.entries(vars).forEach(([k, v]) => {
+      const useEscape = options?.escapeParameter ?? this?.escapeParameter ?? false;
+      const safeVars = useEscape ? escapeParams(vars) : vars;
+
+      Object.entries(safeVars).forEach(([k, v]) => {
         let val = String(v);
 
-        val = val.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));
+        val = val.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, safeVars));
         if (result !== undefined) {
           result = result.replace(new RegExp(`\\{${k}\\}`, "g"), val);
         }
