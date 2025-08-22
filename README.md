@@ -341,7 +341,7 @@ declare module 'swift-i18n' {
 }
 ```
 
-> ✨ **Recommendation**  
+> [!TIP]
 > Use the **manual schema** if you want strict control.  
 > Use the **derived schema** if you prefer automatic synchronization.
 
