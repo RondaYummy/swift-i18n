@@ -251,9 +251,9 @@ const i18n = await createSwiftI18n({
 
 ---
 
-## Advanced Usage
+# Advanced Usage
 
-### Linked messages
+## Linked messages
 
 If there’s a locale messages key that will always have the same concrete text as another one you can just link to it.
 
@@ -292,7 +292,7 @@ The first argument is `message.linked` as the locale messages key as a parameter
 
 ---
 
-### Using the escape parameter option
+## Using the escape parameter option
 
 To help mitigate XSS risks when using HTML messages, Vue I18n provides escape parameter options. When enabled, this option escapes interpolation parameters and sanitizes the final translated HTML.
 
