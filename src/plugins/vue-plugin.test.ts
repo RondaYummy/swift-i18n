@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { createVueI18n, I18N_SYMBOL, useI18n } from './vue-plugin';
+import { createSwiftI18n, createVueI18n, I18N_SYMBOL, useI18n } from './vue-plugin';
 import type { SwiftI18n } from '../i18n';
 import {
   inject,
@@ -98,5 +98,15 @@ describe('useI18n', () => {
     expect(() => useI18n()).toThrow(
       'useI18n must be used within Vue app with createVueI18n'
     );
+  });
+
+  it('createSwiftI18n returns a plugin with installed i18n', async () => {
+    const loader = vi.fn(async (lang: string) => {
+      if (lang === 'en') return { hello: 'Hello' };
+      return { hello: '' };
+    });
+  
+    const plugin = await createSwiftI18n({ loader, defaultLang: 'en' });
+    expect(plugin.install).toBeInstanceOf(Function);
   });
 });

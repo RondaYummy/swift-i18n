@@ -2,12 +2,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SwiftI18n } from "../i18n";
 import { createReactI18n, useI18n, createSwiftI18n } from "./react-plugin";
 
+let cleanup: Function | null = null;
+
 vi.mock("react", async () => {
   const actual = await vi.importActual("react");
   return {
     ...actual,
     useState: (init: any) => [init, vi.fn()],
-    useEffect: (fn: any) => fn(),
+    useEffect: (fn: any) => {
+      cleanup = fn(); // зберігаємо cleanup
+    },
     useContext: () => ({
       i18n: new SwiftI18n({ loader: async () => ({ hello: "Hello" }), defaultLang: 'en' }),
       lang: "en",
@@ -73,19 +77,21 @@ describe("React plugin", () => {
 
   it("I18nProvider removes languageChanged listener on unmount", () => {
     const handlerMap = new Map<string, Function>();
-    const i18n = new SwiftI18n({ loader, defaultLang: "en" }) as any;
+    const i18n: any = new SwiftI18n({ loader, defaultLang: "en" });
   
     i18n.on = vi.fn((event: string, fn: Function) => {
       handlerMap.set(event, fn);
     });
-    i18n.removeListener = vi.fn((event: string, fn: Function) => {
-      expect(handlerMap.get(event)).toBe(fn);
-    });
+    i18n.removeListener = vi.fn();
   
     const Provider = createReactI18n(i18n);
-    const result = Provider({ children: null });
+    Provider({ children: null });
   
-    result.props.value.i18n.removeListener("languageChanged", handlerMap.get("languageChanged"));
-    expect(i18n.removeListener).toHaveBeenCalled();
+    cleanup?.();
+  
+    expect(i18n.removeListener).toHaveBeenCalledWith(
+      "languageChanged",
+      handlerMap.get("languageChanged")
+    );
   });
 });
