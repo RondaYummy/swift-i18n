@@ -10,7 +10,12 @@ export class SwiftI18n extends EventEmitter {
   private fallback?: string;
   private supportedLangs: string[] = [];
   private escapeParameter?: boolean;
+  private warnOnMissing: boolean = true;
   private loader: (lang: string) => Promise<LocaleBundle>;
+
+  private warn(msg: string) {
+    if (this.warnOnMissing) console.warn(msg);
+  }
 
   constructor(options?: Options) {
     super();
@@ -28,6 +33,9 @@ export class SwiftI18n extends EventEmitter {
     }
     this.fallback = options?.fallbackLang;
     this.escapeParameter = options?.escapeParameter;
+    if(options?.warnOnMissing === false)  {
+      this.warnOnMissing = options?.warnOnMissing;
+    }
   }
 
   get lang() {
@@ -67,11 +75,9 @@ export class SwiftI18n extends EventEmitter {
     if (lang === this.currentLang) return;
 
     if (this.supportedLangs.length && !this.supportedLangs.includes(lang)) {
-      console.warn(
-        `Language "${lang}" is not in supportedLangs: [${this.supportedLangs.join(
+      this.warn(`Language "${lang}" is not in supportedLangs: [${this.supportedLangs.join(
           ", "
-        )}]`
-      );
+        )}]`);
       return;
     }
 
@@ -79,25 +85,34 @@ export class SwiftI18n extends EventEmitter {
     await this.load(lang);
   }
 
-  resolveKey(bundle: any, parts: string[]): string | undefined {
+  resolveKey(bundle: any, parts: string[], lang?: string, fullKey?: string): string | undefined {
     let cur = bundle;
     for (const p of parts) {
       if (cur && p in cur) {
         cur = cur[p];
       } else {
+        this.warn(`[swift-i18n] Missing key "${fullKey ?? parts.join('.')}" in lang "${lang ?? 'unknown'}"`);
         return undefined;
       }
     }
-    return typeof cur === "string" ? cur : undefined;
+    if (typeof cur !== "string") {
+      this.warn(`[swift-i18n] Key "${fullKey ?? parts.join('.')}" is not a string in lang "${lang ?? 'unknown'}"`);
+      return undefined;
+    }
+
+    return cur;
   }
 
   t(key: TranslationKey, vars?: Record<string, any>, options?: { escapeParameter?: boolean }): string; // type-safe
   t(key: string, vars?: Record<string, any>, options?: { escapeParameter?: boolean }): string {
     const parts = key.split(".");
     let result =
-    this.resolveKey(this.bundles[this.currentLang], parts) ??
-    (this.fallback ? this.resolveKey(this.bundles[this.fallback], parts) : undefined);
-  if (!result) return key;
+    this.resolveKey(this.bundles[this.currentLang], parts, this.currentLang, key) ??
+    (this.fallback ? this.resolveKey(this.bundles[this.fallback], parts, this.fallback, key) : undefined);
+    if (!result) {
+      this.warn(`[swift-i18n] No bundle loaded for lang "${this.currentLang}"`);
+      return key;
+    }
   
     // linked keys (@:something)
     result = result.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));

@@ -37,5 +37,6 @@ export interface Options {
   fallbackLang?: string;
   supportedLangs?: string[];
   escapeParameter?: boolean;
+  warnOnMissing?: boolean;
   loader?: (lang: string) => Promise<LocaleBundle>;
 }
