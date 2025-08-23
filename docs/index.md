@@ -2,11 +2,11 @@
 layout: home
 
 hero:
-  name: "swift-i18n"
+  name: "Swift I18n"
   text: "Fast & Lightweight swift-i18n Library"
   tagline: Uses native Intl APIs and modern features for blazing performance, dynamic locale loading, and type-safe keys.
   image:
-    src: /swift-i18n-logo.svg
+    src: /swift-i18n-logo.png
     alt: Swift I18n
   actions:
     - theme: brand
