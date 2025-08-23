@@ -1,6 +1,6 @@
 {
   "name": "swift-i18n",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Fast & Lightweight swift-i18n Library",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -28,7 +28,7 @@
     "translation",
     "localization"
   ],
-  "homepage": "https://github.com/RondaYummy/swift-i18n",
+  "homepage": "https://rondayummy.github.io/swift-i18n/",
   "repository": {
     "type": "git",
     "url": "https://github.com/RondaYummy/swift-i18n"
