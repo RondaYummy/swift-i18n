@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { resolveInitialLang, persistLang, detectLanguage } from "./language";
 import { BundlesMap, LocaleBundle, Options, TranslationKey } from "./types";
-import { escapeParams } from "./utils/escap";
+import { escapeParams } from "./utils/escape";
 
 export class SwiftI18n extends EventEmitter {
   private bundles: BundlesMap = {};
