@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Swift I18n",
   description: "Fast & Lightweight swift-i18n Library",
+  base: '/swift-i18n/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
