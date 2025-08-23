@@ -1,7 +1,6 @@
 import { EventEmitter } from "events";
 import { resolveInitialLang, persistLang, detectLanguage } from "./language";
 import { BundlesMap, LocaleBundle, Options, TranslationKey } from "./types";
-import { createVueI18n } from "./plugins/vue-plugin";
 import { escapeParams } from "./utils/escap";
 
 export class SwiftI18n extends EventEmitter {
@@ -14,12 +13,12 @@ export class SwiftI18n extends EventEmitter {
   private loader: (lang: string) => Promise<LocaleBundle>;
 
   private warn(msg: string) {
-    if (this.warnOnMissing) console.warn(msg);
+    if (this.warnOnMissing) console.warn("[swift-i18n] " + msg);
   }
 
   constructor(options?: Options) {
     super();
-    if (!options?.loader) throw new Error("No loader provided for SwiftI18n");
+    if (!options?.loader) throw new Error("No loader provided for swift-i18n");
 
     this.loader = options?.loader;
     if (options.supportedLangs?.length) {
@@ -33,7 +32,7 @@ export class SwiftI18n extends EventEmitter {
     }
     this.fallback = options?.fallbackLang;
     this.escapeParameter = options?.escapeParameter;
-    if(options?.warnOnMissing === false)  {
+    if (options?.warnOnMissing === false) {
       this.warnOnMissing = options?.warnOnMissing;
     }
   }
@@ -75,9 +74,11 @@ export class SwiftI18n extends EventEmitter {
     if (lang === this.currentLang) return;
 
     if (this.supportedLangs.length && !this.supportedLangs.includes(lang)) {
-      this.warn(`Language "${lang}" is not in supportedLangs: [${this.supportedLangs.join(
+      this.warn(
+        `Language "${lang}" is not in supportedLangs: [${this.supportedLangs.join(
           ", "
-        )}]`);
+        )}]`
+      );
       return;
     }
 
@@ -85,46 +86,82 @@ export class SwiftI18n extends EventEmitter {
     await this.load(lang);
   }
 
-  resolveKey(bundle: any, parts: string[], lang?: string, fullKey?: string): string | undefined {
+  resolveKey(
+    bundle: any,
+    parts: string[],
+    lang?: string,
+    fullKey?: string
+  ): string | undefined {
     let cur = bundle;
     for (const p of parts) {
       if (cur && p in cur) {
         cur = cur[p];
       } else {
-        this.warn(`[swift-i18n] Missing key "${fullKey ?? parts.join('.')}" in lang "${lang ?? 'unknown'}"`);
+        this.warn(
+          `Missing key "${fullKey ?? parts.join(".")}" in lang "${
+            lang ?? "unknown"
+          }"`
+        );
         return undefined;
       }
     }
     if (typeof cur !== "string") {
-      this.warn(`[swift-i18n] Key "${fullKey ?? parts.join('.')}" is not a string in lang "${lang ?? 'unknown'}"`);
+      this.warn(
+        `Key "${fullKey ?? parts.join(".")}" is not a string in lang "${
+          lang ?? "unknown"
+        }"`
+      );
       return undefined;
     }
 
     return cur;
   }
 
-  t(key: TranslationKey, vars?: Record<string, any>, options?: { escapeParameter?: boolean }): string; // type-safe
-  t(key: string, vars?: Record<string, any>, options?: { escapeParameter?: boolean }): string {
+  t(
+    key: TranslationKey,
+    vars?: Record<string, any>,
+    options?: { escapeParameter?: boolean }
+  ): string; // type-safe
+  t(
+    key: string,
+    vars?: Record<string, any>,
+    options?: { escapeParameter?: boolean }
+  ): string {
     const parts = key.split(".");
     let result =
-    this.resolveKey(this.bundles[this.currentLang], parts, this.currentLang, key) ??
-    (this.fallback ? this.resolveKey(this.bundles[this.fallback], parts, this.fallback, key) : undefined);
+      this.resolveKey(
+        this.bundles[this.currentLang],
+        parts,
+        this.currentLang,
+        key
+      ) ??
+      (this.fallback
+        ? this.resolveKey(
+            this.bundles[this.fallback],
+            parts,
+            this.fallback,
+            key
+          )
+        : undefined);
     if (!result) {
-      this.warn(`[swift-i18n] No bundle loaded for lang "${this.currentLang}"`);
+      this.warn(`No bundle loaded for lang "${this.currentLang}"`);
       return key;
     }
-  
+
     // linked keys (@:something)
     result = result.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));
 
     if (vars) {
-      const useEscape = options?.escapeParameter ?? this?.escapeParameter ?? false;
+      const useEscape =
+        options?.escapeParameter ?? this?.escapeParameter ?? false;
       const safeVars = useEscape ? escapeParams(vars) : vars;
 
       Object.entries(safeVars).forEach(([k, v]) => {
         let val = String(v);
 
-        val = val.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, safeVars));
+        val = val.replace(/@:([\w.]+)/g, (_, refKey) =>
+          this.t(refKey, safeVars)
+        );
         if (result !== undefined) {
           result = result.replace(new RegExp(`\\{${k}\\}`, "g"), val);
         }

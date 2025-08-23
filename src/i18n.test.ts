@@ -59,7 +59,7 @@ describe('SwiftI18n', () => {
 
   it('should throw an error if no loader is provided', () => {
     expect(() => new SwiftI18n({ defaultLang: 'en' } as any)).toThrow(
-      'No loader provided for SwiftI18n',
+      'No loader provided for swift-i18n',
     );
   });
 
