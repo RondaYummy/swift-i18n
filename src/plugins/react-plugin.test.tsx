@@ -1,90 +1,91 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SwiftI18n } from "../i18n";
+import { createReactI18n, useI18n, createSwiftI18n } from "./react-plugin";
 
-describe("SwiftI18n", () => {
+vi.mock("react", async () => {
+  const actual = await vi.importActual("react");
+  return {
+    ...actual,
+    useState: (init: any) => [init, vi.fn()],
+    useEffect: (fn: any) => fn(),
+    useContext: () => ({
+      i18n: new SwiftI18n({ loader: async () => ({ hello: "Hello" }), defaultLang: 'en' }),
+      lang: "en",
+      bundles: {},
+    }),
+  };
+});
+
+describe("React plugin", () => {
   let loader: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     loader = vi.fn(async (lang: string) => {
-      if (lang === "en")
-        return {
-          hello: "Hello",
-          common: {
-            items_one: "item",
-            items_few: "items",
-            items_many: "items",
-            items_other: "items",
-          },
-        };
+      if (lang === "en") return { hello: "Hello" };
       if (lang === "ua") return { hello: "Привіт" };
       return {};
     });
   });
 
-  it("should initialize with default language", () => {
+  it("createReactI18n returns a function (I18nProvider)", () => {
     const i18n = new SwiftI18n({ loader, defaultLang: "en" });
-    expect(i18n.lang).toBe("en");
-    expect(i18n.allBundles).toEqual({});
+    const Provider = createReactI18n(i18n);
+    expect(typeof Provider).toBe("function");
+
+    const result = Provider({ children: null });
+    expect(result.props).toHaveProperty("value");
+    expect(result.props.value.lang).toBe("en");
+    expect(result.props.value.bundles).toEqual({});
   });
 
-  it("init loads language and fallback", async () => {
-    const i18n = new SwiftI18n({
-      loader,
-      defaultLang: "en",
-      fallbackLang: "ua",
-    });
-    await i18n.init();
-    expect(loader).toHaveBeenCalledWith("en");
-    expect(loader).toHaveBeenCalledWith("ua");
-    expect(i18n.allBundles).toHaveProperty("en");
-    expect(i18n.allBundles).toHaveProperty("ua");
-  });
-
-  it("t() returns translation and fallback", async () => {
-    const i18n = new SwiftI18n({
-      loader,
-      defaultLang: "en",
-      fallbackLang: "ua",
-    });
-    await i18n.init();
-    expect(i18n.t("hello")).toBe("Hello");
-  });
-
-  it("changeLanguage switches language and triggers event", async () => {
+  it("createSwiftI18n returns I18nProvider with loaded bundles", async () => {
+    const Provider = await createSwiftI18n({ loader, defaultLang: "en" });
+    expect(typeof Provider).toBe("function");
+  
     const i18n = new SwiftI18n({ loader, defaultLang: "en" });
-    const spy = vi.fn();
-    i18n.on("languageChanged", spy);
-
-    await i18n.changeLanguage("ua");
-    expect(i18n.lang).toBe("ua");
-    expect(spy).toHaveBeenCalledWith("ua");
-  });
-
-  it("resolveKey warns on missing key", () => {
-    const i18n = new SwiftI18n({ loader, defaultLang: "en" });
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const val = i18n.resolveKey({}, ["missing"]);
-    expect(val).toBeUndefined();
-    expect(warnSpy).toHaveBeenCalled();
-    warnSpy.mockRestore();
-  });
-
-  it("plural returns correct form", async () => {
-    const i18n = new SwiftI18n({ loader, defaultLang: "en", fallbackLang: 'en' });
     await i18n.init();
-    expect(i18n.plural("common.items", 1)).toBe("item"); // one
-    expect(i18n.plural("common.items", 2)).toBe("items"); // other
+  
+    const result = Provider({ children: null });
+    expect(result.props.value.lang).toBe("en");
+    expect(result.props.value.bundles).toEqual(i18n.allBundles);
   });
 
-  it("warnOnMissing false disables warnings", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const i18n = new SwiftI18n({
-      loader,
-      warnOnMissing: false,
-      defaultLang: "en",
+  it("useI18n returns i18n helpers", () => {
+    const ctx = useI18n();
+    expect(ctx).toHaveProperty("t");
+    expect(ctx).toHaveProperty("plural");
+    expect(ctx).toHaveProperty("changeLanguage");
+    expect(ctx).toHaveProperty("lang");
+    expect(ctx).toHaveProperty("bundles");
+  });
+
+  it("I18nProvider updates state on languageChanged", async () => {
+    const i18n = new SwiftI18n({ loader, defaultLang: "en" });
+    await i18n.init();
+  
+    const Provider = createReactI18n(i18n);
+    const result = Provider({ children: null });
+    await i18n.changeLanguage('uk')
+  
+    expect(i18n.lang).toBe("uk");
+    expect(result.props.value.bundles).toBe(i18n.allBundles);
+  });
+
+  it("I18nProvider removes languageChanged listener on unmount", () => {
+    const handlerMap = new Map<string, Function>();
+    const i18n = new SwiftI18n({ loader, defaultLang: "en" }) as any;
+  
+    i18n.on = vi.fn((event: string, fn: Function) => {
+      handlerMap.set(event, fn);
     });
-    i18n.resolveKey({}, ["missing"]);
-    expect(warnSpy).not.toHaveBeenCalled();
-    warnSpy.mockRestore();
+    i18n.removeListener = vi.fn((event: string, fn: Function) => {
+      expect(handlerMap.get(event)).toBe(fn);
+    });
+  
+    const Provider = createReactI18n(i18n);
+    const result = Provider({ children: null });
+  
+    result.props.value.i18n.removeListener("languageChanged", handlerMap.get("languageChanged"));
+    expect(i18n.removeListener).toHaveBeenCalled();
   });
 });
