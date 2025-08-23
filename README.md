@@ -1,7 +1,7 @@
 # swift-i18n
 
 Blazing-fast, dependency-free i18n library for `Vue 3`, `React` and modern `JS/TS apps`.
-Uses native `Intl APIs` and modern features for blazing performance, dynamic locale loading, `caching`, and `type-safe` keys.
+Uses native `Intl APIs` and modern features for blazing performance, dynamic locale loading, and `type-safe` keys.
 
 [![Coverage Status](https://coveralls.io/repos/github/RondaYummy/swift-i18n/badge.svg?branch=main)](https://coveralls.io/github/RondaYummy/swift-i18n?branch=main)
 [![npm version](https://badge.fury.io/js/swift-i18n.svg)](https://badge.fury.io/js/swift-i18n)

@@ -1,10 +1,14 @@
 dist
+packages/vue-i18n/index.html
+temp
+coverage
 node_modules
-
-/build
-/coverage/
 .DS_Store
-.env.local
+.idea
+.vscode
+debug.log
+.eslintcache
+**/.vitepress/cache
 
 .vscode
 .idea

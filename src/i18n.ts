@@ -90,7 +90,8 @@ export class SwiftI18n extends EventEmitter {
     bundle: any,
     parts: string[],
     lang?: string,
-    fullKey?: string
+    fullKey?: string,
+    isFallback?: boolean,
   ): string | undefined {
     let cur = bundle;
     for (const p of parts) {
@@ -114,6 +115,9 @@ export class SwiftI18n extends EventEmitter {
       return undefined;
     }
 
+    if (isFallback) {
+      this.warn(`Fall back to translate the keypath '${fullKey}' with '${lang}' locale.`)
+    }
     return cur;
   }
 
@@ -140,7 +144,8 @@ export class SwiftI18n extends EventEmitter {
             this.bundles[this.fallback],
             parts,
             this.fallback,
-            key
+            key,
+            true
           )
         : undefined);
     if (!result) {

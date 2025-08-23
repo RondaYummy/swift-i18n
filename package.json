@@ -11,7 +11,10 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "keywords": [
     "i18n",
@@ -41,8 +44,9 @@
     "react": "^19.1.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.1",
+    "vitepress": "^2.0.0-alpha.12",
     "vitest": "^3.2.4",
-    "vue": "^3.5.18"
+    "vue": "^3.5.19"
   },
   "peerDependencies": {
     "events": "^3.3.0"
