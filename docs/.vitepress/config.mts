@@ -44,6 +44,7 @@ export default defineConfig({
         text: 'Advanced',
         items: [
           { text: 'Linked messages', link: '/guide/advanced/linked' },
+          { text: 'Custom Message Format', link: '/guide/advanced/format' },
           { text: 'Escape parameter option', link: '/guide/advanced/escape' },
           { text: 'Type-safe Translations', link: '/guide/advanced/safe' },
           { text: 'Runtime warnings', link: '/guide/advanced/warnings' },

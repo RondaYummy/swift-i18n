@@ -1,21 +1,18 @@
-import { SwiftI18n } from '../i18n';
+import { SwiftI18n } from "../i18n";
 
 type Prev = [never, 0, 1, 2, 3, 4, 5];
 
-export type NestedKeyOf<
-  ObjectType extends object,
-  Depth extends number = 5
-> = [Depth] extends [never]
+export type NestedKeyOf<ObjectType extends object, Depth extends number = 5> = [
+  Depth
+] extends [never]
   ? never
   : {
-    [Key in keyof ObjectType & string]:
-    ObjectType[Key] extends object
-    ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key], Prev[Depth]>}`
-    : `${Key}`;
-  }[keyof ObjectType & string];
+      [Key in keyof ObjectType & string]: ObjectType[Key] extends object
+        ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key], Prev[Depth]>}`
+        : `${Key}`;
+    }[keyof ObjectType & string];
 
-
-export interface Translations { }
+export interface Translations {}
 
 // Keys are calculated from the merged interface; until the user adds their keys, this will be `never`.
 export type TranslationKey = NestedKeyOf<Translations> extends never
@@ -39,4 +36,24 @@ export interface Options {
   escapeParameter?: boolean;
   warnOnMissing?: boolean;
   loader?: (lang: string) => Promise<LocaleBundle>;
+  messageCompiler?: MessageCompiler;
 }
+
+export type MessageContext = {
+  values?: Record<string, any>;
+  locale?: string;
+  key?: string;
+};
+
+export type CompileError = Error & { code?: string };
+
+export type MessageFunction = (ctx: MessageContext) => string;
+
+export type MessageCompiler = (
+  message: string | unknown, // text or AST
+  ctx: {
+    locale: string;
+    key: string;
+    onError?: (err: CompileError) => void;
+  }
+) => MessageFunction;

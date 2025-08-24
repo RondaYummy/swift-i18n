@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import { resolveInitialLang, persistLang, detectLanguage } from "./language";
-import { BundlesMap, LocaleBundle, Options, TranslationKey } from "./types";
+import { BundlesMap, LocaleBundle, MessageCompiler, Options, TranslationKey } from "./types";
 import { escapeParams } from "./utils/escape";
 
 export class SwiftI18n extends EventEmitter {
@@ -10,6 +10,7 @@ export class SwiftI18n extends EventEmitter {
   private supportedLangs: string[] = [];
   private escapeParameter?: boolean;
   private warnOnMissing: boolean = true;
+  private messageCompiler?: MessageCompiler;
   private loader: (lang: string) => Promise<LocaleBundle>;
 
   private warn(msg: string) {
@@ -34,6 +35,9 @@ export class SwiftI18n extends EventEmitter {
     this.escapeParameter = options?.escapeParameter;
     if (options?.warnOnMissing === false) {
       this.warnOnMissing = options?.warnOnMissing;
+    }
+    if (options?.messageCompiler) {
+      this.messageCompiler = options.messageCompiler;
     }
   }
 
@@ -91,7 +95,7 @@ export class SwiftI18n extends EventEmitter {
     parts: string[],
     lang?: string,
     fullKey?: string,
-    isFallback?: boolean,
+    isFallback?: boolean
   ): string | undefined {
     let cur = bundle;
     for (const p of parts) {
@@ -116,7 +120,9 @@ export class SwiftI18n extends EventEmitter {
     }
 
     if (isFallback) {
-      this.warn(`Fall back to translate the keypath '${fullKey}' with '${lang}' locale.`)
+      this.warn(
+        `Fall back to translate the keypath '${fullKey}' with '${lang}' locale.`
+      );
     }
     return cur;
   }
@@ -155,6 +161,18 @@ export class SwiftI18n extends EventEmitter {
 
     // linked keys (@:something)
     result = result.replace(/@:([\w.]+)/g, (_, refKey) => this.t(refKey, vars));
+
+    // --- ICU integration hook ---
+    if (vars && this.messageCompiler) {
+      try {
+        const fn = this.messageCompiler(result, { locale: this.currentLang, key });
+        return fn({ values: vars, locale: this.currentLang, key });
+      } catch (err) {
+        this.warn(
+          `Formatter error for key "${key}": ${(err as Error).message}`
+        );
+      }
+    }
 
     if (vars) {
       const useEscape =
