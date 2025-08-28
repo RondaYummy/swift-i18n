@@ -10,7 +10,7 @@ vi.mock("react", async () => {
     ...actual,
     useState: (init: any) => [init, vi.fn()],
     useEffect: (fn: any) => {
-      cleanup = fn(); // зберігаємо cleanup
+      cleanup = fn();
     },
     useContext: () => ({
       i18n: new SwiftI18n({ loader: async () => ({ hello: "Hello" }), defaultLang: 'en' }),

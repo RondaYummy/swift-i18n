@@ -20,15 +20,10 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Vue',
+        text: 'Getting started',
         items: [
-          { text: 'Getting Started', link: '/guide/vue/started' },
-        ],
-      },
-      {
-        text: 'React',
-        items: [
-          { text: 'Getting Started', link: '/guide/react/started' },
+          { text: 'Vue', link: '/guide/vue/started' },
+          { text: 'React', link: '/guide/react/started' },
         ],
       },
       {
